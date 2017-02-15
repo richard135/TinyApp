@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html lang ="en">
+
+<head>
+  <title>TinyApp </title>
+</head>
+
+<body>
+  <header>
+    <% include ../partials/_headers %>
+  </header>
+
+  <% for (url in urls) {%>
+    <li><%= `${url}  -  ${urls[url]}` %></li>
+     <a href="www.blank.com"> Shorten</a>
+  <% }; %>
+</body>
+
+</html>
+
+
+
