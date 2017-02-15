@@ -26,8 +26,12 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+
+//urls
+
+app.get("/urls", (req, res) => {
+  let templateVars = {urls: urlDatabase};
+  res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -38,16 +42,21 @@ app.post("/urls", (req, res) => {
   res.redirect("http://localhost:8080/urls/" + temp);
 });
 
+//u/shortURL
+
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
 });
 
-app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase};
-  res.render("urls_index", templateVars);
+
+//urls/new
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
 
+
+///urls/:id
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id,
@@ -55,6 +64,21 @@ app.get("/urls/:id", (req, res) => {
    };
   res.render("urls_show", templateVars);
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("http://localhost:8080/urls/")
+});
+
+app.post("/urls/:id", (req, res) => {
+  let longURL = req.body.longURL;
+  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[req.params.id] = req.body.longURL : urlDatabase[req.params.id] = "https://"+ req.body.longURL
+  res.redirect("http://localhost:8080/urls/" + req.params.id);
+});
+
+
+
+
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
