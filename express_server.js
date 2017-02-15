@@ -21,7 +21,6 @@ var total = ""
 
 
 
-
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -33,12 +32,15 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let temp = generateRandomString()
-  urlDatabase[temp] = req.body.longURL
-  console.log(req.body);
+  let longURL = req.body.longURL;
+  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[temp] = req.body.longURL : urlDatabase[temp] = "https://"+ req.body.longURL
+  console.log(urlDatabase);
   res.redirect("http://localhost:8080/urls/" + temp);
 });
 
 app.get("/u/:shortURL", (req, res) => {
+
+  let longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
 });
 
