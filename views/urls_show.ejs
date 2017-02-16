@@ -11,20 +11,23 @@
 <% include ../partials/_headers %>
 </header>
   <table>
-  <h2><%=  shortURL %></h2>
-  <li><%= urls[shortURL] %></li>
+  <tr>
+  <h3><%=  shortURL %> <%= urls[shortURL] %></h3>
     <!-- update button -->
-  <form action="/urls/<%=shortURL%>" method="POST">
-    <label for="longURL">Enter a new URL:</label>
+  </tr>
+  <tr>
+  <th><form action="/urls/<%=shortURL%>" method="POST">
+    <label for="longURL">Update your website:</label>
     <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-    <input type="submit" value="Update">
+    <input type="submit" value="Update"></th>
+    <th><form method="POST" action="/urls/<%=shortURL%>/delete"><button>Delete</button></form></th>
   </form>
+  </tr>
   </table>
 
 
 
 
-    <form method="POST" action="/urls/<%=shortURL%>/delete"><button>Delete</button></form>
 
 
 </body>
