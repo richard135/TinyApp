@@ -43,7 +43,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls/new", (req, res) => {
   let temp = generateRandomString()
   let longURL = req.body.longURL;
   longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[temp] = req.body.longURL : urlDatabase[temp] = "https://"+ req.body.longURL
@@ -61,8 +61,12 @@ app.get("/u/:shortURL", (req, res) => {
 
 //urls/new
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+  username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
+
 
 
 ///urls/:id

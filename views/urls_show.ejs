@@ -7,18 +7,19 @@
 </head>
 
 <body>
-  <header>
-    <% include ../partials/_headers %>
-  </header>
-    <h2><%= shortURL %></h2>
-    <li><%= urls[shortURL] %></li>
-
+<header>
+<% include ../partials/_headers %>
+</header>
+  <table>
+  <h2><%=  shortURL %></h2>
+  <li><%= urls[shortURL] %></li>
     <!-- update button -->
-    <form action="/urls/<%=shortURL%>" method="POST">
-      <label for="longURL">Enter a new URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-      <input type="submit" value="Update">
-    </form>
+  <form action="/urls/<%=shortURL%>" method="POST">
+    <label for="longURL">Enter a new URL:</label>
+    <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+    <input type="submit" value="Update">
+  </form>
+  </table>
 
 
 
