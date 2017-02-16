@@ -140,9 +140,11 @@ app.post("/register", (req, res) => {
   if (req.body.email === '' || req.body.password === ''){
     return res.status(400).send('Please enter email or password');
   }
-  // if (req.body.email == ){
-  // return res.status(400).send('Please enter email or password');
-  // }
+  for (var user in users) {
+    if (users[user].email === req.body.email) {
+    return res.status(400).send('Please enter a new email');
+    };
+  }
   let randomID = generateRandomString();
   users[randomID] = { id:  randomID,
   email: req.body.email,
