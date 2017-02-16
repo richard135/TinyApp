@@ -7,11 +7,26 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
 
 function generateRandomString() {
 const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
 var total = ""
   for ( var i = 0; i < 6; i++) {
     min = Math.ceil(1);
@@ -23,10 +38,6 @@ var total = ""
 }
 
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
 
 
 
@@ -41,6 +52,14 @@ app.get("/urls", (req, res) => {
   username: req.cookies["username"]
   };
   res.render("urls_index", templateVars);
+});
+
+//urls/new
+app.get("/urls/new", (req, res) => {
+  let templateVars = {
+  username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls/new", (req, res) => {
@@ -58,14 +77,6 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
-//urls/new
-app.get("/urls/new", (req, res) => {
-  let templateVars = {
-  username: req.cookies["username"]
-  };
-  res.render("urls_new", templateVars);
-});
 
 
 
@@ -113,8 +124,34 @@ app.post("/logout", (req, res) => {
   res.redirect("http://localhost:8080/urls");
 });
 
+//Register
+app.get("/register", (req, res) => {
+let templateVars = {
+  username: req.cookies["username"]
+  };
+  res.render("urls_register", templateVars);
+});
 
+app.post("/u/register", (req, res) => {
+  res.redirect("http://localhost:8080/register");
+});
 
+app.post("/register", (req, res) => {
+  if (req.body.email === '' || req.body.password === ''){
+    return res.status(400).send('Please enter email or password');
+  }
+  // if (req.body.email == ){
+  // return res.status(400).send('Please enter email or password');
+  // }
+  let randomID = generateRandomString();
+  users[randomID] = { id:  randomID,
+  email: req.body.email,
+  password: req.body.password
+  }
+  res.cookie('user_id', randomID);
+  console.log(users);
+  res.redirect("http://localhost:8080/urls");
+});
 
 
 
