@@ -150,7 +150,7 @@ app.post("/register", (req, res) => {
   email: req.body.email,
   password: req.body.password
   }
-  res.cookie('user_id', randomID);
+  res.cookie('user_id', user[randomID]);
   console.log(users);
   res.redirect("http://localhost:8080/urls");
 });
