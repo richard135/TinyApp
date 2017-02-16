@@ -48,18 +48,12 @@ app.get("/", (req, res) => {
 //urls
 
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase,
-  username: req.cookies["username"]
-  };
-  res.render("urls_index", templateVars);
+  res.render("urls_index", {user: req.cookies["user_id"], urls:urlDatabase, shortURL: req.params.id});
 });
 
 //urls/new
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-  username: req.cookies["username"]
-  };
-  res.render("urls_new", templateVars);
+  res.render("urls_new", {user: req.cookies["user_id"]});
 });
 
 app.post("/urls/new", (req, res) => {
@@ -83,11 +77,7 @@ app.get("/u/:shortURL", (req, res) => {
 ///urls/:id
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-    urls:urlDatabase,
-    username: req.cookies["username"]
-   };
-  res.render("urls_show", templateVars);
+  res.render("urls_show", {user: req.cookies["user_id"], urls:urlDatabase, shortURL: req.params.id});
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -104,9 +94,26 @@ app.post("/urls/:id", (req, res) => {
 
 //Login
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username)
-  console.log(req.body.username);
-  res.redirect("http://localhost:8080/");
+let user;
+  for (let x in users) {
+    if (users[x].email === req.body.email) {
+      user = users[x];
+      console.log(x);
+      break;
+    }
+  }
+  if (user) {
+    if (user.password === req.body.password) {
+    res.cookie('user_id', user);
+    res.redirect('/urls/');
+    }
+    else res.status(401).send('Bad credentials');
+  }
+  res.status(401).send('Bad credentials')
+});
+
+app.get("/login", (req,res ) => {
+  res.render("urls_login", {user: req.cookies["user_id"]});
 });
 
 app.get("/urls.json", (req, res) => {
@@ -120,16 +127,13 @@ app.post("/urls/:id/delete", (req,res) => {
 
 //LogOut
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect("http://localhost:8080/urls");
 });
 
 //Register
 app.get("/register", (req, res) => {
-let templateVars = {
-  username: req.cookies["username"]
-  };
-  res.render("urls_register", templateVars);
+  res.render("urls_register", {user: req.cookies["user_id"]});
 });
 
 app.post("/u/register", (req, res) => {
@@ -138,7 +142,7 @@ app.post("/u/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   if (req.body.email === '' || req.body.password === ''){
-    return res.status(400).send('Please enter email or password');
+    return res.status(400).login('Please enter email or password');
   }
   for (var user in users) {
     if (users[user].email === req.body.email) {
@@ -150,12 +154,16 @@ app.post("/register", (req, res) => {
   email: req.body.email,
   password: req.body.password
   }
-  res.cookie('user_id', user[randomID]);
+  let permUser = users[randomID];
+  res.cookie('user_id', permUser);
   console.log(users);
   res.redirect("http://localhost:8080/urls");
 });
 
 
+//if user.password === req.body password, then send cookie
+//for password else { res.status(401).send('bad credentials')}
+//else return
 
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
@@ -164,4 +172,5 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
+
 
