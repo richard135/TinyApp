@@ -10,8 +10,8 @@
   <header>
     <% include ../partials/_headers %>
   </header>
-    <h2><%= `${shortURL}`%></h2>
-    <li><%= `${urls[shortURL]}`%></li>
+    <h2><%= shortURL %></h2>
+    <li><%= urls[shortURL] %></li>
 
     <!-- update button -->
     <form action="/urls/<%=shortURL%>" method="POST">
@@ -23,7 +23,7 @@
 
 
 
-    <form method="POST" action="/urls/<%=url%>/delete"><button>Delete</button></form>
+    <form method="POST" action="/urls/<%=shortURL%>/delete"><button>Delete</button></form>
 
 
 </body>

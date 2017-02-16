@@ -10,7 +10,17 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.16.1",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.5.5",
     "express": "^4.14.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richard135/TinyApp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/richard135/TinyApp/issues"
+  },
+  "homepage": "https://github.com/richard135/TinyApp#readme"
 }
