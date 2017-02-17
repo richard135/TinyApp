@@ -8,8 +8,8 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { shortURL: "b2xVn2", longURL: "http://www.lighthouselabs.ca", userID : "userRandomID"},
+  "9sm5xK": { shortURL: "9sm5xK", longURL: "http://www.google.ca", userID : "userRandomID2"}
 };
 
 const users = {
@@ -45,21 +45,44 @@ app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
-//urls
+
+function getCurrentUserUrls(id){
+  let urls = [];
+  for (let shortURL in urlDatabase){
+    if(urlDatabase[shortURL].userID === id){
+      urls.push(urlDatabase[shortURL]);
+    }
+  }
+  return urls;
+}
 
 app.get("/urls", (req, res) => {
-  res.render("urls_index", {user: req.cookies["user_id"], urls:urlDatabase, shortURL: req.params.id});
+  let currentUser = req.cookies["user_id"];
+  if (currentUser){
+    console.log(currentUser, 'hi');
+    let urls = getCurrentUserUrls(currentUser.id);
+    console.log(urls);
+    res.render("urls_index", {urls: urls, user: req.cookies["user_id"]});
+  }
+  else {
+    res.redirect("/login");
+  }
 });
 
 //urls/new
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new", {user: req.cookies["user_id"]});
+  if (req.cookies["user_id"]) {
+    res.render("urls_new", {user: req.cookies["user_id"]});
+  }
+  else {
+    res.redirect("/login");
+  }
 });
 
 app.post("/urls/new", (req, res) => {
   let temp = generateRandomString()
   let longURL = req.body.longURL;
-  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[temp] = req.body.longURL : urlDatabase[temp] = "https://"+ req.body.longURL
+  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[temp] = {shortURL: temp, longURL: req.body.longURL, userID: req.cookies["user_id"].id }: urlDatabase[temp] = {shortURL: temp, longURL: "https://"+ req.body.longURL, userID: req.cookies["user_id"].id }
   console.log(urlDatabase);
   res.redirect("http://localhost:8080/urls/" + temp);
 });
@@ -77,17 +100,19 @@ app.get("/u/:shortURL", (req, res) => {
 ///urls/:id
 
 app.get("/urls/:id", (req, res) => {
-  res.render("urls_show", {user: req.cookies["user_id"], urls:urlDatabase, shortURL: req.params.id});
+  if (req.cookies["user_id"]) {
+    res.render("urls_show", {user: req.cookies["user_id"], urls: urlDatabase[req.params.id].longURL, shortURL: urlDatabase[req.params.id].shortURL});
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
-  res.redirect("http://localhost:8080/urls/")
+  res.redirect("http://localhost:8080/urls/");
 });
 
 app.post("/urls/:id", (req, res) => {
   let longURL = req.body.longURL;
-  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[req.params.id] = req.body.longURL : urlDatabase[req.params.id] = "https://"+ req.body.longURL
+  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[req.params.id].longURL = req.body.longURL : urlDatabase[req.params.id].longURL = "https://"+ req.body.longURL
   res.redirect("http://localhost:8080/urls/" + req.params.id);
 });
 
@@ -104,10 +129,12 @@ let user;
   }
   if (user) {
     if (user.password === req.body.password) {
-    res.cookie('user_id', user);
-    res.redirect('/urls/');
+      res.cookie('user_id', user);
+      res.redirect('/urls');
     }
-    else res.status(401).send('Bad credentials');
+    else {
+      res.status(401).send('Bad credentials');
+    }
   }
   res.status(401).send('Bad credentials')
 });
@@ -141,21 +168,21 @@ app.post("/u/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  if (req.body.email === '' || req.body.password === ''){
+  if (req.body.email === '' || req.body.password === '') {
     return res.status(400).login('Please enter email or password');
   }
   for (var user in users) {
     if (users[user].email === req.body.email) {
-    return res.status(400).send('Please enter a new email');
+      return res.status(400).send('Please enter a new email');
     };
   }
   let randomID = generateRandomString();
-  users[randomID] = { id:  randomID,
-  email: req.body.email,
-  password: req.body.password
+  users[randomID] = {
+    id:  randomID,
+    email: req.body.email,
+    password: req.body.password
   }
-  let permUser = users[randomID];
-  res.cookie('user_id', permUser);
+  res.cookie('user_id', randomID);
   console.log(users);
   res.redirect("http://localhost:8080/urls");
 });

@@ -3,26 +3,28 @@
 <html lang ="en">
 
 <head>
+<header>
+  <% include ../partials/_headers%>
+</header>
   <title>TinyApp </title>
 </head>
 
 <body>
-<header>
-  <% include ../partials/_headers%>
-</header>
-<table>
-<% for (url in urls) {%>
-  <tr>
-  <th><li><%= url %> </li></th>
-  <th> <%= urls[url] %></th>
-  <th><button><a href="http://localhost:8080/urls/<%= url%>"> edit</a></button></th>
-  <th><form method="POST" action="/urls/<%=url%>/delete"><button>Delete</button></form></th>
-  </tr>
-<% }; %>
-</table>
+<% if (user) { %>
+  <table>
+  <% for (url of urls) {%>
+    <tr>
+    <th><li><%= url.shortURL %> </li></th>
+    <th> <%= url.longURL %></th>
+    <th><button><a href="http://localhost:8080/urls/<%= url%>"> edit</a></button></th>
+    <th><form method="POST" action="/urls/<%=url%>/delete"><button>Delete</button></form></th>
+    </tr>
+  <% }; %>
+  </table>
 
-<div></div>
-<button><a href="http://localhost:8080/urls/new"> Shorten Link Here</a></button>
+  <div></div>
+  <button><a href="http://localhost:8080/urls/new"> Shorten Link Here</a></button>
+<% } %>
 </body>
 
 </html>
