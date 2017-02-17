@@ -5,11 +5,10 @@ app.set("view engine", "ejs");
 var cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
-  keys: ["hellohellohello"],
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  keys: ["hellohellohello"]
 }))
-
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 const bcrypt = require('bcrypt');
@@ -140,9 +139,11 @@ app.post("/urls/:shortURL", (req, res) => {
 //Login
 app.post("/login", (req, res) => {
 let user;
-let currentUser = req.session.user_id;
+// let currentUser = req.session.user_id;
   for (let x in users) {
-    if (users[x].email === req.body.email) {
+console.log("========> Users", users[x].email);
+console.log("body email:", req.body.email);x
+    if (users[x]['email'] === req.body.email) {
       user = users[x];
       console.log(x);
       break;
@@ -171,7 +172,7 @@ app.get("/urls.json", (req, res) => {
 
 //LogOut
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   res.redirect("http://localhost:8080/urls");
 });
 
