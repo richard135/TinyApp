@@ -90,7 +90,8 @@ app.post("/urls/new", (req, res) => {
 //u/shortURL
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]
+  let longURL = urlDatabase[req.params.shortURL].longURL
+  console.log(longURL);
   res.redirect(longURL);
 });
 
@@ -99,21 +100,36 @@ app.get("/u/:shortURL", (req, res) => {
 
 ///urls/:id
 
-app.get("/urls/:id", (req, res) => {
-  if (req.cookies["user_id"]) {
-    res.render("urls_show", {user: req.cookies["user_id"], urls: urlDatabase[req.params.id].longURL, shortURL: urlDatabase[req.params.id].shortURL});
+app.get("/urls/:shortURL", (req, res) => {
+  const currentUser = req.cookies["user_id"];
+  const url = urlDatabase[req.params.shortURL];
+
+  if (currentUser) {
+    res.render("urls_show", {
+      user: currentUser,
+      url: url,
+    });
   }
 });
 
-app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("http://localhost:8080/urls/");
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let currentUser = req.cookies["user_id"];
+  let url = urlDatabase[req.params.shortURL];
+      console.log("=============>current user:", currentUser);
+    console.log("-------------->url.userID:", url.userID)
+  if ( currentUser.id === url.userID){
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("http://localhost:8080/urls/");
+  }
+  else {
+    res.status(401).send('Bad credentials');
+  }
 });
 
-app.post("/urls/:id", (req, res) => {
-  let longURL = req.body.longURL;
-  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[req.params.id].longURL = req.body.longURL : urlDatabase[req.params.id].longURL = "https://"+ req.body.longURL
-  res.redirect("http://localhost:8080/urls/" + req.params.id);
+app.post("/urls/:shortURL", (req, res) => {
+  let url =  urlDatabase[req.params.shortURL];
+  let longURL = "https://"+ url.longURL
+  res.redirect("http://localhost:8080/urls/" + req.params.shortURL);
 });
 
 
@@ -145,11 +161,6 @@ app.get("/login", (req,res ) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
-
-app.post("/urls/:id/delete", (req,res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("http://localhost:8080/urls/")
 });
 
 //LogOut
