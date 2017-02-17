@@ -1,25 +1,18 @@
 <title>This is the title </title>
 <h1>TinyURL</h1>
-
-
 <% if(user){ %>
   <p>Username: <%= user.email%></p>
-    <form method="POST" action="/logout"><button>Logout</button></form>
-    <button><a href="http://localhost:8080/urls"> My Links</a></button>
-
+  <form method="POST" action="/logout"><button>Logout</button></form>
+  <button><a href="http://localhost:8080/urls"> My Links</a></button>
 <% } else { %>
-<!-- Login Button -->
-<button><a href="http://localhost:8080/login"> Login Here</a></button>
-<table>
-<tr>
-
-
-
-<form action="/u/register" method="POST">
-  <label for="longURL"></label>
-  <input type="submit" value="Register Here"></tr>
-</form>
-</table>
+  <button><a href="http://localhost:8080/login"> Login Here</a></button>
+  <table>
+  <tr>
+  <form action="/u/register" method="POST">
+    <label for="longURL"></label>
+    <input type="submit" value="Register Here"></tr>
+  </form>
+  </table>
 
 <% } %>
 
