@@ -1,9 +1,15 @@
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
-app.set("view engine", "ejs")
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+app.set("view engine", "ejs");
+var cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: 'session',
+  keys: ["hellohellohello"],
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 const bcrypt = require('bcrypt');
@@ -59,12 +65,10 @@ function getCurrentUserUrls(id){
 }
 
 app.get("/urls", (req, res) => {
-  let currentUser = req.cookies["user_id"];
+  let currentUser = req.session.user_id;
   if (currentUser){
-    console.log(currentUser, 'hi');
     let urls = getCurrentUserUrls(currentUser.id);
-    console.log(urls);
-    res.render("urls_index", {urls: urls, user: req.cookies["user_id"]});
+    res.render("urls_index", {urls: urls, user: req.session.user_id});
   }
   else {
     res.redirect("/login");
@@ -73,8 +77,8 @@ app.get("/urls", (req, res) => {
 
 //urls/new
 app.get("/urls/new", (req, res) => {
-  if (req.cookies["user_id"]) {
-    res.render("urls_new", {user: req.cookies["user_id"]});
+  if (req.session.user_id) {
+    res.render("urls_new", {user: req.session.user_id});
   }
   else {
     res.redirect("/login");
@@ -84,7 +88,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls/new", (req, res) => {
   let temp = generateRandomString()
   let longURL = req.body.longURL;
-  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[temp] = {shortURL: temp, longURL: req.body.longURL, userID: req.cookies["user_id"].id }: urlDatabase[temp] = {shortURL: temp, longURL: "https://"+ req.body.longURL, userID: req.cookies["user_id"].id }
+  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[temp] = {shortURL: temp, longURL: req.body.longURL, userID: req.session.user_id.id }: urlDatabase[temp] = {shortURL: temp, longURL: "https://"+ req.body.longURL, userID: req.session.user_id.id }
   console.log(urlDatabase);
   res.redirect("http://localhost:8080/urls/" + temp);
 });
@@ -103,7 +107,7 @@ app.get("/u/:shortURL", (req, res) => {
 ///urls/:id
 
 app.get("/urls/:shortURL", (req, res) => {
-  const currentUser = req.cookies["user_id"];
+  const currentUser = req.session.user_id;
   console.log ("Current User============>",currentUser);
   const url = urlDatabase[req.params.shortURL];
   if (currentUser) {
@@ -115,7 +119,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let currentUser = req.cookies["user_id"];
+  let currentUser = req.session.user_id;
   let url = urlDatabase[req.params.shortURL];
   if ( currentUser.id === url.userID){
     delete urlDatabase[req.params.shortURL];
@@ -136,7 +140,7 @@ app.post("/urls/:shortURL", (req, res) => {
 //Login
 app.post("/login", (req, res) => {
 let user;
-let currentUser = req.cookies["user_id"];
+let currentUser = req.session.user_id;
   for (let x in users) {
     if (users[x].email === req.body.email) {
       user = users[x];
@@ -147,7 +151,7 @@ let currentUser = req.cookies["user_id"];
   console.log("User------>",user);
   if (user) {
     if (bcrypt.compareSync(req.body.password, user.password)) {
-      res.cookie('user_id', user);
+      req.session.user_id =  user;
       res.redirect('/urls');
     }
     else {
@@ -158,7 +162,7 @@ let currentUser = req.cookies["user_id"];
 });
 
 app.get("/login", (req,res ) => {
-  res.render("urls_login", {user: req.cookies["user_id"]});
+  res.render("urls_login", {user: req.session.user_id});
 });
 
 app.get("/urls.json", (req, res) => {
@@ -173,7 +177,7 @@ app.post("/logout", (req, res) => {
 
 //Register
 app.get("/register", (req, res) => {
-  res.render("urls_register", {user: req.cookies["user_id"]});
+  res.render("urls_register", {user: req.session.user_id});
 });
 
 app.post("/u/register", (req, res) => {
@@ -196,7 +200,7 @@ const hashed_password = bcrypt.hashSync(req.body.password, 10);
     email: req.body.email,
     password: hashed_password
   }
-  res.cookie('user_id', randomID);
+  req.session.user_id = randomID;
    console.log("-------> users", users);
   res.redirect("http://localhost:8080/urls");
 });
