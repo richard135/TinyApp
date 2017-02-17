@@ -1,11 +1,12 @@
 <title>This is the title </title>
 <h1>TinyURL</h1>
 
-<!-- left of here connecting user_id to app.gets/url page -->
 
 <% if(user){ %>
-  <p>Username: <%= user.id%></p>
+  <p>Username: <%= user.email%></p>
     <form method="POST" action="/logout"><button>Logout</button></form>
+    <button><a href="http://localhost:8080/urls"> My Links</a></button>
+
 <% } else { %>
 <!-- Login Button -->
 <button><a href="http://localhost:8080/login"> Login Here</a></button>

@@ -45,14 +45,6 @@ var total = ""
 }
 
 
-
-
-
-app.get("/", (req, res) => {
-  res.redirect("/urls");
-});
-
-
 function getCurrentUserUrls(id){
   let urls = [];
   for (let shortURL in urlDatabase){
@@ -63,6 +55,20 @@ function getCurrentUserUrls(id){
   return urls;
 }
 
+
+app.get("/", (req, res) => {
+let currentUser = req.session.user_id;
+  if (currentUser) {
+    res.redirect("/urls");
+  }
+  else {
+    res.redirect("/login");
+  }
+});
+
+
+
+
 app.get("/urls", (req, res) => {
   let currentUser = req.session.user_id;
   if (currentUser){
@@ -70,7 +76,7 @@ app.get("/urls", (req, res) => {
     res.render("urls_index", {urls: urls, user: req.session.user_id});
   }
   else {
-    res.redirect("/login");
+    res.status(401).send('Please visit http://localhost:8080/login');
   }
 });
 
@@ -80,7 +86,7 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new", {user: req.session.user_id});
   }
   else {
-    res.redirect("/login");
+    res.status(401).send('Please visit http://localhost:8080/login')
   }
 });
 
@@ -110,6 +116,9 @@ app.get("/urls/:shortURL", (req, res) => {
   console.log ("Current User============>",currentUser);
   const url = urlDatabase[req.params.shortURL];
   if (currentUser) {res.render("urls_show", {user: currentUser, url: url,});
+  }
+  else {
+    res.status(401).send('Please visit http://localhost:8080/login');
   }
 });
 
