@@ -18,7 +18,7 @@
   <tr>
   <th><form action="/urls/<%= url.shortURL %>" method="POST">
     <label for="longURL">Update your website:</label>
-    <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px" value="<%= url.longURL %>">
+    <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px" >
     <input type="submit" value="Update"></th>
     <th><form method="POST" action="/urls/<%= url.shortURL %>/delete"><button>Delete</button></form></th>
   </form>

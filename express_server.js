@@ -109,11 +109,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const currentUser = req.session.user_id;
   console.log ("Current User============>",currentUser);
   const url = urlDatabase[req.params.shortURL];
-  if (currentUser) {
-    res.render("urls_show", {
-      user: currentUser,
-      url: url,
-    });
+  if (currentUser) {res.render("urls_show", {user: currentUser, url: url,});
   }
 });
 
@@ -130,10 +126,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  let url =  urlDatabase[req.params.shortURL];
-  let longURL = "https://"+ url.longURL
-  res.redirect("http://localhost:8080/urls/" + req.params.shortURL);
+  let shortURL =  urlDatabase[req.params.shortURL];
+  let longURL =  req.body.longURL;
+  urlDatabase[req.params.shortURL]["longURL"] = "https://"+ longURL;
+  console.log("======> LONG URL: ", longURL)
+  res.redirect("http://localhost:8080/urls/");
 });
+
+
 
 
 //Login
