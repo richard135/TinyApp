@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
+const bcrypt = require('bcrypt');
+
 
 const urlDatabase = {
   "b2xVn2": { shortURL: "b2xVn2", longURL: "http://www.lighthouselabs.ca", userID : "userRandomID"},
@@ -102,8 +104,8 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const currentUser = req.cookies["user_id"];
+  console.log ("Current User============>",currentUser);
   const url = urlDatabase[req.params.shortURL];
-
   if (currentUser) {
     res.render("urls_show", {
       user: currentUser,
@@ -115,8 +117,6 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   let currentUser = req.cookies["user_id"];
   let url = urlDatabase[req.params.shortURL];
-      console.log("=============>current user:", currentUser);
-    console.log("-------------->url.userID:", url.userID)
   if ( currentUser.id === url.userID){
     delete urlDatabase[req.params.shortURL];
     res.redirect("http://localhost:8080/urls/");
@@ -136,6 +136,7 @@ app.post("/urls/:shortURL", (req, res) => {
 //Login
 app.post("/login", (req, res) => {
 let user;
+let currentUser = req.cookies["user_id"];
   for (let x in users) {
     if (users[x].email === req.body.email) {
       user = users[x];
@@ -143,8 +144,9 @@ let user;
       break;
     }
   }
+  console.log("User------>",user);
   if (user) {
-    if (user.password === req.body.password) {
+    if (bcrypt.compareSync(req.body.password, user.password)) {
       res.cookie('user_id', user);
       res.redirect('/urls');
     }
@@ -179,7 +181,8 @@ app.post("/u/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  if (req.body.email === '' || req.body.password === '') {
+const hashed_password = bcrypt.hashSync(req.body.password, 10);
+  if (req.body.email === '' || hashed_password === '') {
     return res.status(400).login('Please enter email or password');
   }
   for (var user in users) {
@@ -191,10 +194,10 @@ app.post("/register", (req, res) => {
   users[randomID] = {
     id:  randomID,
     email: req.body.email,
-    password: req.body.password
+    password: hashed_password
   }
   res.cookie('user_id', randomID);
-  console.log(users);
+   console.log("-------> users", users);
   res.redirect("http://localhost:8080/urls");
 });
 
