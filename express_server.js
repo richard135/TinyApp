@@ -170,9 +170,6 @@ app.post("/urls/:shortURL", (req, res) => {
   } else {
     res.status(401).send('Please visit /login');
   }
-  // if (req.params.shortURL == null){
-  //   res.status(404).send('Please visit /login');
-  // }
 });
 
 
