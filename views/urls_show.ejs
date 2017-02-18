@@ -8,28 +8,16 @@
 
 <body>
 <header>
-<% include ../partials/_headers %>
+  <% include ../partials/_headers %>
 </header>
-  <table>
-  <tr>
-  <h3><%=  url.shortURL %> </h3>
-    <!-- update button -->
-  </tr>
-  <tr>
-  <th><form action="/urls/<%= url.shortURL %>" method="POST">
+
+<h3><%=  url.shortURL %> </h3>
+  <form action="/urls/<%= url.shortURL %>" method="POST">
     <label for="longURL">Update your website:</label>
     <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px" >
     <input type="submit" value="Update"></th>
-    </form>
-     <form method="POST" action="/urls/<%= url.shortURL%>/delete"><button>Delete</button></form>
-
-  </tr>
-  </table>
-
-
-
-
-
+  </form>
+  <form method="POST" action="/urls/<%= url.shortURL%>/delete"><button>Delete</button></form>
 
 </body>
 
