@@ -73,16 +73,16 @@ app.get("/", (req, res) => {
 app.post("/urls", (req, res) => {
   let temp = generateRandomString();
   let longURL = req.body.longURL;
-  let currentUser = req.session.user_id
+  let currentUser = req.session.user_id;
   urlDatabase[temp] = {shortURL: temp, longURL: "https://" + longURL, userID: currentUser};
-  longURL =  urlDatabase[temp]
+  longURL =  urlDatabase[temp];
   console.log(urlDatabase);
   console.log(req.body);
   res.redirect("/urls/" + temp);
 });
 
 app.get("/urls", (req, res) => {
-  let currentUser = req.session.user_id
+  let currentUser = req.session.user_id;
   if (currentUser){
     let urls = getCurrentUserUrls(currentUser);
     res.render("urls_index", {urls: urls });
@@ -115,7 +115,7 @@ app.post("/urls/new", (req, res) => {
 //u/shortURL
 
 app.get("/u/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL]!= undefined) {
+  if (urlDatabase[req.params.shortURL] !== undefined) {
     let longURL = urlDatabase[req.params.shortURL].longURL;
     console.log(longURL);
     res.redirect(longURL);
@@ -132,23 +132,20 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const currentUser = req.session.user_id;
   const url = urlDatabase[req.params.shortURL];
-  if (urlDatabase[req.params.shortURL] == undefined) {
-   res.status(404).render("error404");
-  }
-  else if (url.userID == currentUser){
+  if (urlDatabase[req.params.shortURL] === undefined) {
+    res.status(404).render("error404");
+  } else if (url.userID === currentUser){
     res.render("urls_show", {user: currentUser, url: url});
-  }
-  else if (url.userID != currentUser.id){
-   res.status(403).render("error403");
+  } else if (url.userID !== currentUser.id){
+    res.status(403).render("error403");
   } else {
-   res.status(401).render("error401");
+    res.status(401).render("error401");
   }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect("/urls/");
-
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls/");
 });
 
 app.post("/urls/:shortURL", (req, res) => {
