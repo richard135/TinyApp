@@ -11,19 +11,13 @@
 
 <body>
 <% if (user) { %>
-  <table>
   <% for (url of urls) {%>
-    <tr>
-    <th><li><%= url.shortURL %> </li></th>
-    <th> <%= url.longURL %></th>
-    <th><button><a href="http://localhost:8080/urls/<%= url.shortURL%>"> edit</a></button></th>
-    <th><form method="POST" action="/urls/<%=url.shortURL%>/delete"><button>Delete</button></form></th>
-    </tr>
+    <li><%= url.shortURL %> - <%= url.longURL %> </li>
+    <button><a href="http://localhost:8080/urls/<%= url.shortURL%>"> edit</a></button>
+    <form method="POST" action="/urls/<%=url.shortURL%>/delete"><button>Delete</button></form>
   <% }; %>
-  </table>
-
   <div></div>
-  <button><a href="http://localhost:8080/urls/new"> Shorten Link Here</a></button>
+  <a href="http://localhost:8080/urls/new"> Shorten Link Here</a>
 <% } %>
 </body>
 

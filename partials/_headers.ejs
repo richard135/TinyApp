@@ -3,17 +3,10 @@
 <% if(user){ %>
   <p>Username: <%= user.email%></p>
   <form method="POST" action="/logout"><button>Logout</button></form>
-  <button><a href="http://localhost:8080/urls"> My Links</a></button>
+  <a href="http://localhost:8080/urls"> My Links</a>
 <% } else { %>
-  <button><a href="http://localhost:8080/login"> Login Here</a></button>
-  <table>
-  <tr>
-  <form action="/u/register" method="POST">
-    <label for="longURL"></label>
-    <input type="submit" value="Register Here"></tr>
-  </form>
-  </table>
-
+  <a href="http://localhost:8080/login"> Login Here</a>
+  <a href="/register"> Register Here</a>
 <% } %>
 
 
