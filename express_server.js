@@ -101,18 +101,6 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-app.post("/urls/new", (req, res) => {
-  let temp = generateRandomString();
-  let longURL = req.body.longURL;
-  let currentUser = req.session.user_id;
-  urlDatabase[temp] = {shortURL: temp, longURL: "http://" + longURL, userID: currentUser };
-  longURL =  urlDatabase[temp];
-  console.log(urlDatabase);
-  console.log(req.body);
-  res.redirect("/urls/" + temp);
-});
-
-//u/shortURL
 
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL] !== undefined) {
@@ -123,8 +111,6 @@ app.get("/u/:shortURL", (req, res) => {
     res.status(404).render("error404");
   }
 });
-
-
 
 
 
@@ -143,10 +129,6 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls/");
-});
 
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL =  urlDatabase[req.params.shortURL];
@@ -161,7 +143,10 @@ app.post("/urls/:shortURL", (req, res) => {
   }
 });
 
-
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls/");
+});
 
 
 //Login
