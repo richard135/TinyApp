@@ -3,9 +3,9 @@
 <% if(user){ %>
   <p>Username: <%= user.email%></p>
   <form method="POST" action="/logout"><button>Logout</button></form>
-  <a href="http://localhost:8080/urls"> My Links</a>
+  <a href="/urls"> My Links</a>
 <% } else { %>
-  <a href="http://localhost:8080/login"> Login Here</a>
+  <a href="/login"> Login Here</a>
   <a href="/register"> Register Here</a>
 <% } %>
 

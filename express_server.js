@@ -70,38 +70,46 @@ app.get("/", (req, res) => {
   }
 });
 
-
+app.post("/urls", (req, res) => {
+  let temp = generateRandomString();
+  let longURL = req.body.longURL;
+  let currentUser = req.session.user_id
+  urlDatabase[temp] = {shortURL: temp, longURL: "https://" + longURL, userID: currentUser};
+  longURL =  urlDatabase[temp]
+  console.log(urlDatabase);
+  console.log(req.body);
+  res.redirect("/urls/" + temp);
+});
 
 app.get("/urls", (req, res) => {
-  let currentUser = req.session.user_id;
+  let currentUser = req.session.user_id
   if (currentUser){
     let urls = getCurrentUserUrls(currentUser);
-    console.log("urls===============>", urls);
     res.render("urls_index", {urls: urls });
   } else {
-    res.status(401).render("urls_error401");
+    res.status(401).render("error401");
   }
 });
 
-app.post("/urls", (req,res) => {
-});
 
 //urls/new
 app.get("/urls/new", (req, res) => {
   if (req.session.user_id) {
     res.render("urls_new", {user: req.session.user_id});
   }else {
-    res.status(401).render("urls_error401");
+    res.status(401).render("error401");
   }
 });
 
 app.post("/urls/new", (req, res) => {
   let temp = generateRandomString();
   let longURL = req.body.longURL;
-  longURL = longURL.indexOf('http://') !== -1 ?  urlDatabase[temp] = {shortURL: temp, longURL: req.body.longURL, userID: req.session.user_id} : urlDatabase[temp] = {shortURL: temp, longURL: "https://" + req.body.longURL, userID: req.session.user_id };
+  let currentUser = req.session.user_id;
+  urlDatabase[temp] = {shortURL: temp, longURL: "https://" + longURL, userID: currentUser };
+  longURL =  urlDatabase[temp];
   console.log(urlDatabase);
   console.log(req.body);
-  res.redirect("http://localhost:8080/urls/" + temp);
+  res.redirect("/urls/" + temp);
 });
 
 //u/shortURL
@@ -112,7 +120,7 @@ app.get("/u/:shortURL", (req, res) => {
     console.log(longURL);
     res.redirect(longURL);
   } else{
-    res.status(404).render("urls_error404");
+    res.status(404).render("error404");
   }
 });
 
@@ -125,15 +133,15 @@ app.get("/urls/:shortURL", (req, res) => {
   const currentUser = req.session.user_id;
   const url = urlDatabase[req.params.shortURL];
   if (urlDatabase[req.params.shortURL] == undefined) {
-    res.status(404).render("urls_error404");
+   res.status(404).render("error404");
   }
-  if (url.userID == currentUser){
+  else if (url.userID == currentUser){
     res.render("urls_show", {user: currentUser, url: url});
   }
-  if (url.userID != currentUser.id){
-    res.status(403).render("urls_error403");
+  else if (url.userID != currentUser.id){
+   res.status(403).render("error403");
   } else {
-    res.status(401).render("urls_error401");
+   res.status(401).render("error401");
   }
 });
 
@@ -141,12 +149,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   let currentUser = req.session.user_id;
   let url = urlDatabase[req.params.shortURL];
   if (urlDatabase[req.params.shortURL] == undefined){
-    res.status(404).render("urls_error404");
+    res.status(404).render("error404");
   }
   if ( currentUser === url.userID){
     delete urlDatabase[req.params.shortURL];
-    res.redirect("http://localhost:8080/urls/");
-  }else {
+    res.redirect("/urls/");
+  } else {
     res.status(401).send('Bad credentials');
   }
 });
@@ -158,12 +166,12 @@ app.post("/urls/:shortURL", (req, res) => {
   let currentUser = req.session.user_id;
   if (currentUser === url.userID) {
     urlDatabase[req.params.shortURL]["longURL"] = "https://" + longURL;
-    res.redirect("http://localhost:8080/urls/");
+    res.redirect("/urls");
   } else {
-    res.status(401).send('Please visit http://localhost:8080/login');
+    res.status(401).send('Please visit /login');
   }
   // if (req.params.shortURL == null){
-  //   res.status(404).send('Please visit http://localhost:8080/login');
+  //   res.status(404).send('Please visit /login');
   // }
 });
 
@@ -186,11 +194,11 @@ app.post("/login", (req, res) => {
       res.redirect('/urls');
       return;
     }else {
-      res.status(401).send('Bad credentials');
+      res.status(401).render("error401");
       return;
     }
   }
-  res.status(401).send('Bad credentials');
+  res.status(401).render("error401");
 });
 
 
@@ -205,7 +213,7 @@ app.get("/urls.json", (req, res) => {
 //LogOut
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("http://localhost:8080/");
+  res.redirect("/");
 });
 
 //Register
@@ -217,11 +225,11 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const hashed_password = bcrypt.hashSync(req.body.password, 10);
   if (req.body.email === '' || hashed_password === '') {
-    return res.status(400).render('urls_error400');
+    return res.status(400).render('error400');
   }
   for (var user in users) {
     if (users[user].email === req.body.email) {
-      return res.status(400).render('urls_error400');
+      return res.status(400).render('error400');
     }
   }
   let randomID = generateRandomString();
@@ -230,7 +238,7 @@ app.post("/register", (req, res) => {
     password: hashed_password
   };
   req.session.user_id = randomID;
-  res.redirect("http://localhost:8080/urls");
+  res.redirect("/urls");
 });
 
 app.get("/hello", (req, res) => {
