@@ -105,7 +105,7 @@ app.post("/urls/new", (req, res) => {
   let temp = generateRandomString();
   let longURL = req.body.longURL;
   let currentUser = req.session.user_id;
-  urlDatabase[temp] = {shortURL: temp, longURL: "https://" + longURL, userID: currentUser };
+  urlDatabase[temp] = {shortURL: temp, longURL: "http://" + longURL, userID: currentUser };
   longURL =  urlDatabase[temp];
   console.log(urlDatabase);
   console.log(req.body);
@@ -146,17 +146,9 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let currentUser = req.session.user_id;
-  let url = urlDatabase[req.params.shortURL];
-  if (urlDatabase[req.params.shortURL] == undefined){
-    res.status(404).render("error404");
-  }
-  if ( currentUser === url.userID){
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls/");
-  } else {
-    res.status(401).send('Bad credentials');
-  }
+
 });
 
 app.post("/urls/:shortURL", (req, res) => {
